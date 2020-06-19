@@ -8,4 +8,7 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Test {
+    Class<? extends Exception> exc() default DefaultException.class;
 }
+
+class DefaultException extends Exception {}
