@@ -1,6 +1,8 @@
 package com.github.testo;
 
 
+import com.github.testo.reports.Report;
+
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,13 +15,15 @@ public class Main {
         int n = sc.nextInt();
 
         ExecutorService executor = Executors.newFixedThreadPool(n);
+        Report r = new Report();
 
         while (sc.hasNext()) {
             String className = sc.next();
-            executor.submit(() -> new TestRunner(className).run());
+            executor.submit(() -> new TestRunner(className, r).run());
         }
 
         executor.shutdown();
+        r.printReport();
 
     }
 
