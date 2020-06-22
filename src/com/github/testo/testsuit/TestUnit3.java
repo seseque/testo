@@ -10,9 +10,10 @@ class TestUnit3 {
 
     private static int number;
 
-    @Test
+    @Test(exc = IndexOutOfBoundsException.class)
     public static void test() {
         System.out.println("this is test"+ number);
+        System.out.println("IndexOutOfBounds checking");
     }
 
     @Test
