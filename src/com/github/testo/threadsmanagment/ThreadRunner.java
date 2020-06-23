@@ -13,9 +13,9 @@ public class ThreadRunner extends Thread {
 
     @Override
     public void run() {
-        while (!taskQueue.isEmpty())
         synchronized (taskQueue) {
-            taskQueue.poll().run();
+            while (!taskQueue.isEmpty())
+                taskQueue.poll().run();
         }
     }
 }

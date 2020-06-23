@@ -11,13 +11,18 @@ public class AssertReporter implements Reporter {
     @Override
     public void addFailedResult(String methodName, Throwable cause) {
         AssertException assertCause = (AssertException) cause;
-        String sCause = "Expected: " + assertCause.expected + ", Actual: " + assertCause.actual;
-        results.add("Test " + methodName + " failed" + sCause);
+        String sCause = "Expected: " + assertCause.expected + ", Actual: " + assertCause.actual + ".";
+        results.add("Test " + methodName + " failed: " + sCause);
+    }
+
+    @Override
+    public void addFailedResult(String methodName, String  cause) {
+        results.add("Test " + methodName + " failed: " + cause);
     }
 
     @Override
     public void addSuccessedResult(String methodName) {
-        results.add("Test " + methodName + " successfully passed");
+        results.add("Test " + methodName + " successfully passed.");
     }
 
     @Override
