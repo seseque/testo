@@ -5,6 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Аннотацией @Before помечаются те методы в классе,
+ * которые должны быть вызваны до методов с аннотацией @Test
+ * В случае если таких методов более одного в классе, выполняются все помеченные методы
+ * Порядок вызова не определен.
+ */
 @Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Before {
