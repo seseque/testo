@@ -19,7 +19,7 @@ public class Main {
 
         while (sc.hasNext()) {
             String className = sc.next();
-            tm.addTask(() -> new TestRunner(className, r).run());
+            tm.addTask(new TestRunner(className, r));
         }
         tm.start();
         tm.shutdown();
