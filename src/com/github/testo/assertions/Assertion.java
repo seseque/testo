@@ -24,9 +24,4 @@ public class Assertion {
         if (object == null) throw new AssertException(null, object);
     }
 
-//    public static void assertNotNull(Object object)  {
-//        if (object != null) throw new AssertException(null, object) ;
-//    }
-
-
 }

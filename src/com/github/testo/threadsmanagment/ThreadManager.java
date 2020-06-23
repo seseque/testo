@@ -19,7 +19,7 @@ public class ThreadManager {
         }
     }
 
-    public synchronized void addTask(Runnable task) {
+    public void addTask(Runnable task) {
         taskQueue.add(task);
     }
 
