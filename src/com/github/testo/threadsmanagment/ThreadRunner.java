@@ -4,7 +4,7 @@ import java.util.Queue;
 
 public class ThreadRunner extends Thread {
 
-    Queue<Runnable> taskQueue;
+    final Queue<Runnable> taskQueue;
 
     public ThreadRunner(Queue<Runnable> taskQueue) {
         this.taskQueue = taskQueue;
@@ -13,6 +13,9 @@ public class ThreadRunner extends Thread {
 
     @Override
     public void run() {
-        while (!taskQueue.isEmpty()) taskQueue.poll().run();
+        synchronized (taskQueue) {
+            while (!taskQueue.isEmpty())
+                taskQueue.poll().run();
+        }
     }
 }

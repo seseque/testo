@@ -4,6 +4,7 @@ import com.github.testo.annotations.After;
 import com.github.testo.annotations.Before;
 import com.github.testo.annotations.Ignore;
 import com.github.testo.annotations.Test;
+import com.github.testo.exceptions.DefaultException;
 import com.github.testo.reports.AssertReporter;
 import com.github.testo.reports.Report;
 import com.github.testo.reports.Reporter;
@@ -11,17 +12,18 @@ import com.github.testo.reports.Reporter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class TestRunner implements Runnable {
 
     final private String testClassName;
     Report report;
 
-    private Method beforeMethod;
-    private Method afterMethod;
+    final private Set<Method> beforeMethod = new HashSet<>();
+    final private Set<Method> afterMethod = new HashSet<>();
     final private Map<Method, Class<? extends Exception>> testMethods = new HashMap<>();
-    final private Map<Method, Class<? extends Exception>> ignoreTestMethods = new HashMap<>();
     Reporter reporter = new AssertReporter();
 
     TestRunner(String testClassName, Report report) {
@@ -36,53 +38,63 @@ class TestRunner implements Runnable {
             Method[] methods = testClass.getDeclaredMethods();
             for (Method method : methods) {
                 method.setAccessible(true);
-                if (method.isAnnotationPresent(Before.class)) beforeMethod = method;
-                if (method.isAnnotationPresent(After.class)) afterMethod = method;
-                if (method.isAnnotationPresent(Test.class)) {
-
-                    Test t = method.getAnnotation(Test.class);
-                    testMethods.put(method, t.exc());
+                if (method.isAnnotationPresent(Ignore.class)) {
+                    break;
                 }
-                if (method.isAnnotationPresent(Ignore.class))
-                    ignoreTestMethods.put(method, method.getAnnotation(Test.class).exc());
+                if (method.isAnnotationPresent(Before.class)) {
+                    beforeMethod.add(method);
+                }
+                if (method.isAnnotationPresent(After.class)) {
+                    afterMethod.add(method);
+                }
+                if (method.isAnnotationPresent(Test.class)) {
+                    Test t = method.getAnnotation(Test.class);
+                    testMethods.put(method, t.expectedException());
+//                    System.out.println( "Method = " + method);
+//                    System.out.println( "Exception = " + t.expectedException());
+                }
             }
-            for (Method ignoreMethod : ignoreTestMethods.keySet()) {
-                testMethods.remove(ignoreMethod);
-            }
-
-            try {
-                beforeMethod.invoke(null);
-                reporter.addResult(reporter.reportSuccess(beforeMethod.getName()));
-            } catch (InvocationTargetException e) {
-                reporter.addResult(reporter.reportFail(beforeMethod.getName(), e.getCause()));
+            for (Method method : beforeMethod) {
+                try {
+                    method.invoke(null);
+                    reporter.addSuccessedResult(method.getName());
+                } catch (InvocationTargetException e) {
+                    reporter.addFailedResult(method.getName(), e.getCause());
+                }
             }
 
             for (Method tm : testMethods.keySet()) {
                 try {
                     tm.invoke(null);
-                    reporter.addResult(reporter.reportSuccess(tm.getName()));
+                    Class<? extends Exception> expectedExceptionClass = testMethods.get(tm);
+                    System.out.println(expectedExceptionClass);
+                    if (expectedExceptionClass == DefaultException.class) {
+                        reporter.addSuccessedResult(tm.getName());
+                    } else {
+                        reporter.addFailedResult(tm.getName(), "Expected exception " + expectedExceptionClass + " is wasn't thrown");
+                    }
                 } catch (InvocationTargetException e) {
                     Throwable cause = e.getCause();
                     Class<? extends Exception> expected = testMethods.get(tm);
-                    if (cause.getClass() != expected)
-                        reporter.addResult(reporter.reportFail(tm.getName(), e.getCause()));
-                    else reporter.addResult(reporter.reportSuccess(tm.getName()));
+                    if (cause.getClass() != expected) {
+                        reporter.addFailedResult(tm.getName(), e.getCause());
+                    } else {
+                        reporter.addSuccessedResult(tm.getName());
+                    }
                 }
             }
-            try {
-                afterMethod.invoke(null);
-                reporter.addResult(reporter.reportSuccess(afterMethod.getName()));
-            } catch (InvocationTargetException e) {
-                reporter.addResult(reporter.reportFail(afterMethod.getName(), e.getCause()));
-            }
 
+            for (Method method : afterMethod) {
+                try {
+                    method.invoke(null);
+                    reporter.addSuccessedResult(method.getName());
+                } catch (InvocationTargetException e) {
+                    reporter.addFailedResult(method.getName(), e.getCause());
+                }
+            }
             reporter.makeReport(testClassName, report);
         } catch (ClassNotFoundException | IllegalAccessException e) {
             e.printStackTrace();
         }
-
-
     }
-
-    ;
 }

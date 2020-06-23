@@ -9,20 +9,20 @@ public class AssertReporter implements Reporter {
     final private ArrayList<String> results = new ArrayList<>();
 
     @Override
-    public String reportFail(String methodName, Throwable cause) {
+    public void addFailedResult(String methodName, Throwable cause) {
         AssertException assertCause = (AssertException) cause;
-        String sCause = "Expected: " + assertCause.expected + ", Actual: " + assertCause.actual;
-        return "Test " + methodName + " failed" + sCause;
+        String sCause = "Expected: " + assertCause.expected + ", Actual: " + assertCause.actual + ".";
+        results.add("Test " + methodName + " failed: " + sCause);
     }
 
     @Override
-    public String reportSuccess(String methodName) {
-        return "Test " + methodName + " successfully passed";
+    public void addFailedResult(String methodName, String  cause) {
+        results.add("Test " + methodName + " failed: " + cause);
     }
 
     @Override
-    public void addResult(String result) {
-        results.add(result);
+    public void addSuccessedResult(String methodName) {
+        results.add("Test " + methodName + " successfully passed.");
     }
 
     @Override

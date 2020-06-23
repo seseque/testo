@@ -13,19 +13,16 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         int n = sc.nextInt();
 
-//        ExecutorService executor = Executors.newFixedThreadPool(n);
         ThreadManager tm = new ThreadManager(n);
 
         Report r = new Report();
 
         while (sc.hasNext()) {
             String className = sc.next();
-//            executor.submit(() -> new TestRunner(className, r).run());
             tm.addTask(() -> new TestRunner(className, r).run());
         }
         tm.start();
         tm.shutdown();
-//        executor.shutdown();
         r.printReport();
 
     }

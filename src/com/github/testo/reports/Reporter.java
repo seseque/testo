@@ -3,11 +3,11 @@ package com.github.testo.reports;
 public interface Reporter {
 
 
-    String reportFail(String methodName, Throwable cause);
+    void addFailedResult(String methodName, Throwable cause);
 
-    String reportSuccess(String methodName);
+    void addFailedResult(String methodName, String cause);
 
-    void addResult(String result);
+    void addSuccessedResult(String methodName);
 
     void makeReport(String className, Report report);
 
