@@ -1,5 +1,7 @@
 package com.github.testo.annotations;
 
+import com.github.testo.exceptions.DefaultException;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,4 +13,3 @@ public @interface Test {
     Class<? extends Exception> expectedException() default DefaultException.class;
 }
 
-class DefaultException extends Exception {}
