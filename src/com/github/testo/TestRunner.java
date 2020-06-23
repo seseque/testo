@@ -50,8 +50,6 @@ class TestRunner implements Runnable {
                 if (method.isAnnotationPresent(Test.class)) {
                     Test t = method.getAnnotation(Test.class);
                     testMethods.put(method, t.expectedException());
-//                    System.out.println( "Method = " + method);
-//                    System.out.println( "Exception = " + t.expectedException());
                 }
             }
             for (Method method : beforeMethod) {
@@ -67,7 +65,6 @@ class TestRunner implements Runnable {
                 try {
                     tm.invoke(null);
                     Class<? extends Exception> expectedExceptionClass = testMethods.get(tm);
-                    System.out.println(expectedExceptionClass);
                     if (expectedExceptionClass == DefaultException.class) {
                         reporter.addSuccessedResult(tm.getName());
                     } else {
