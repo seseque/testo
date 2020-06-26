@@ -39,7 +39,7 @@ class TestRunner implements Runnable {
             for (Method method : methods) {
                 method.setAccessible(true);
                 if (method.isAnnotationPresent(Ignore.class)) {
-                    break;
+                    continue;
                 }
                 if (method.isAnnotationPresent(Before.class)) {
                     beforeMethod.add(method);
